@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtSphere v5.0 | Complete Artist Profile</title>
+    <style>
+        :root {
+            --primary: #111;
+            --accent: #b89130;
+            --bg: #ffffff;
+            --soft-gray: #f4f4f4;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            line-height: 1.6;
+        }
+
+        /* Header Area */
+        header {
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, #fafafa, #ffffff);
+            border-bottom: 1px solid #eee;
+        }
+
+        h1 { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 15px; }
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            background: white;
+            padding: 6px;
+            border-radius: 100px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #eee;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        button.search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button.search-btn:hover { background: var(--accent); }
+
+        /* Main Display */
+        #mainDisplay { display: none; padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
+
+        /* Biography & Face Section */
+        .artist-bio-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-bottom: 80px;
+            background: var(--soft-gray);
+            padding: 40px;
+            border-radius: 30px;
+        }
+
+        .artist-face-wrapper {
+            flex-shrink: 0;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 8px solid white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .artist-face-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bio-content { flex: 1; }
+        .bio-content h2 { font-size: 2.5rem; margin-bottom: 15px; border-bottom: 3px solid var(--primary); display: inline-block; }
+        .bio-content p { font-size: 1.1rem; color: #444; margin-bottom: 25px; }
+
+        .wiki-btn {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 4px;
+            transition: 0.3s;
+        }
+
+        .wiki-btn:hover { color: var(--accent); }
+
+        /* Work Collection Gallery */
+        .gallery-header { font-size: 2rem; text-align: center; margin-bottom: 40px; font-weight: 800; }
+        
+        .gallery-columns {
+            column-count: 3;
+            column-gap: 20px;
+        }
+
+        .art-card {
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: 0.3s ease;
+        }
+
+        .art-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+
+        .art-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #eee;
+        }
+
+        .art-info { padding: 15px; font-size: 0.75rem; color: #888; font-weight: 600; text-transform: uppercase; }
+
+        /* Loader Animation */
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .artist-bio-container { flex-direction: column; text-align: center; gap: 30px; }
+            .gallery-columns { column-count: 2; }
+        }
+
+        @media (max-width: 600px) {
+            .gallery-columns { column-count: 1; }
+            .artist-face-wrapper { width: 200px; height: 200px; }
+            h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ArtSphere</h1>
+        <p style="color:#888; margin-bottom:30px;">“ArtSphere helps you find artists fast. Search, explore, and get inspired—all in one place.”</p>
+        <div class="search-box">
+            <input type="text" id="artistInput" placeholder="Enter an artist's name (e.g. Frida Kahlo)">
+            <button class="search-btn" onclick="searchArtist()">Search</button>
+        </div>
+    </header>
+
+    <div class="loader" id="loader"></div>
+
+    <main id="mainDisplay">
+        <section class="artist-bio-container">
+            <div class="artist-face-wrapper">
+                <img id="artistPortrait" src="" alt="Artist Portrait">
+            </div>
+            <div class="bio-content">
+                <h2 id="artistName"></h2>
+                <p id="artistSummary"></p>
+                <a id="wikiLink" href="#" target="_blank" class="wiki-btn">Full Wikipedia Profile →</a>
+            </div>
+        </section>
+
+        <h3 class="gallery-header">Works Collection</h3>
+        <div id="gallery" class="gallery-columns"></div>
+    </main>
+
+    <script>
+        const loader = document.getElementById('loader');
+        const mainDisplay = document.getElementById('mainDisplay');
+        const gallery = document.getElementById('gallery');
+
+        document.getElementById('artistInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchArtist();
+        });
+
+        async function searchArtist() {
+            const name = document.getElementById('artistInput').value.trim();
+            if (!name) return;
+
+            loader.style.display = 'block';
+            mainDisplay.style.display = 'none';
+            gallery.innerHTML = '';
+
+            try {
+                // 1. Get correct artist title
+                const sRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&format=json&origin=*`);
+                const sData = await sRes.json();
+                if (!sData.query.search.length) throw new Error("Artist not found");
+                const title = sData.query.search[0].title;
+
+                // 2. Fetch Summary & Portrait
+                const bRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+                const bData = await bRes.json();
+
+                // Populate Biography Section
+                document.getElementById('artistName').innerText = bData.title;
+                document.getElementById('artistSummary').innerText = bData.extract;
+                document.getElementById('wikiLink').href = bData.content_urls.desktop.page;
+                
+                // Set the portrait (The artist's face)
+                const portraitImg = document.getElementById('artistPortrait');
+                portraitImg.src = bData.thumbnail ? bData.thumbnail.source : 'https://via.placeholder.com/400x400?text=Portrait+Unavailable';
+
+                // 3. Fetch Image Collection
+                const iRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=images&imlimit=60&format=json&origin=*`);
+                const iData = await iRes.json();
+                const pId = Object.keys(iData.query.pages)[0];
+                const imageFiles = iData.query.pages[pId].images || [];
+
+                const skipList = ['logo', 'icon', 'stub', 'wikimedia', 'magnify', 'edit'];
+                const filtered = imageFiles.filter(img => {
+                    const t = img.title.toLowerCase();
+                    return (t.endsWith('.jpg') || t.endsWith('.png')) && !skipList.some(k => t.includes(k));
+                }).slice(0, 24);
+
+                if (filtered.length > 0) {
+                    filtered.forEach(f => fetchAndRenderImage(f.title));
+                } else {
+                    gallery.innerHTML = "<p>No artworks found in the public archive.</p>";
+                }
+
+                mainDisplay.style.display = 'block';
+                window.scrollTo({ top: 350, behavior: 'smooth' });
+
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        async function fetchAndRenderImage(fileTitle) {
+            try {
+                const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const pages = data.query.pages;
+                const imgUrl = pages[Object.keys(pages)[0]].imageinfo[0].url;
+
+                if (imgUrl) {
+                    const cleanTitle = fileTitle.replace('File:', '').replace(/\.[^/.]+$/, "").replace(/_/g, ' ');
+                    const div = document.createElement('div');
+                    div.className = 'art-card';
+                    div.innerHTML = `
+                        <img src="${imgUrl}" alt="${cleanTitle}" onerror="this.parentElement.style.display='none'">
+                        <div class="art-info">${cleanTitle}</div>
+                    `;
+                    gallery.appendChild(div);
+                }
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>

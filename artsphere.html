@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtSphere v4.0 | Infinite Gallery</title>
+    <style>
+        :root {
+            --primary: #111;
+            --accent: #b89130;
+            --bg: #ffffff;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            line-height: 1.5;
+        }
+
+        /* Hero Section */
+        header {
+            padding: 80px 20px;
+            text-align: center;
+            background: #fcfcfc;
+            border-bottom: 1px solid #eee;
+        }
+
+        h1 { font-size: 4rem; font-weight: 900; letter-spacing: -3px; margin-bottom: 10px; }
+        .intro { color: #888; font-size: 1.1rem; margin-bottom: 40px; }
+
+        .search-container {
+            max-width: 650px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 20px 30px;
+            border-radius: 100px;
+            border: 1px solid #ddd;
+            font-size: 1.1rem;
+            outline: none;
+            box-shadow: var(--card-shadow);
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+
+        button.main-search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Results Area */
+        #mainDisplay { display: none; padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
+
+        /* Bio Header */
+        .artist-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .profile-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #fff;
+            box-shadow: var(--card-shadow);
+        }
+
+        .profile-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .bio-box { max-width: 800px; margin: 0 auto; }
+        .bio-box p { font-size: 1.2rem; color: #444; margin-bottom: 30px; }
+
+        .more-info-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 800;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .more-info-btn:hover { background: var(--primary); color: #fff; }
+
+        /* Massive Gallery */
+        .gallery-title { font-size: 2.5rem; text-align: center; margin-bottom: 50px; font-weight: 800; }
+        
+        .gallery-grid {
+            column-count: 3;
+            column-gap: 20px;
+        }
+
+        .art-item {
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: 0.3s;
+        }
+
+        .art-item:hover { transform: scale(1.02); }
+
+        .art-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            min-height: 100px;
+            background: #f0f0f0;
+        }
+
+        .art-label { padding: 15px; font-size: 0.8rem; font-weight: bold; color: #666; text-transform: uppercase; }
+
+        /* Loader */
+        .spinner {
+            display: none;
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 900px) { .gallery-grid { column-count: 2; } }
+        @media (max-width: 600px) { .gallery-grid { column-count: 1; } h1 { font-size: 2.5rem; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ArtSphere</h1>
+        <p class="intro">ArtSphere helps you find artists fast. Search, explore, and get inspired—all in one place.</p>
+        <div class="search-container">
+            <input type="text" id="artistInput" placeholder="Search a world-famous artist...">
+            <button class="main-search-btn" onclick="searchArtist()">Discover</button>
+        </div>
+    </header>
+
+    <div class="spinner" id="loader"></div>
+
+    <main id="mainDisplay">
+        <section class="artist-header">
+            <div class="profile-container">
+                <img id="artistImg" src="" alt="">
+            </div>
+            <h2 id="artistName" style="font-size: 3rem; margin-bottom: 20px;"></h2>
+            <div class="bio-box">
+                <p id="artistBio"></p>
+                <a id="wikiBtn" href="#" target="_blank" class="more-info-btn">Explore Full Archive</a>
+            </div>
+        </section>
+
+        <h3 class="gallery-title">Collection</h3>
+        <div id="gallery" class="gallery-grid">
+            <!-- Many images will load here -->
+        </div>
+    </main>
+
+    <script>
+        const loader = document.getElementById('loader');
+        const mainDisplay = document.getElementById('mainDisplay');
+        const gallery = document.getElementById('gallery');
+
+        document.getElementById('artistInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchArtist();
+        });
+
+        async function searchArtist() {
+            const name = document.getElementById('artistInput').value.trim();
+            if (!name) return;
+
+            loader.style.display = 'block';
+            mainDisplay.style.display = 'none';
+            gallery.innerHTML = '';
+
+            try {
+                // 1. Search Wikipedia for correct title
+                const sUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&format=json&origin=*`;
+                const sRes = await fetch(sUrl);
+                const sData = await sRes.json();
+                if (!sData.query.search.length) throw new Error("Artist not found");
+                const title = sData.query.search[0].title;
+
+                // 2. Fetch Summary/Bio
+                const bRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
+                const bData = await bRes.json();
+
+                // 3. Update Bio Info
+                document.getElementById('artistName').innerText = bData.title;
+                document.getElementById('artistBio').innerText = bData.extract;
+                document.getElementById('artistImg').src = bData.thumbnail ? bData.thumbnail.source : 'https://via.placeholder.com/300?text=No+Image';
+                document.getElementById('wikiBtn').href = bData.content_urls.desktop.page;
+
+                // 4. Fetch Large Image List (increased to 100 to find enough valid images)
+                const iUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=images&imlimit=100&format=json&origin=*`;
+                const iRes = await fetch(iUrl);
+                const iData = await iRes.json();
+                const pId = Object.keys(iData.query.pages)[0];
+                const imageFiles = iData.query.pages[pId].images || [];
+
+                // Filter out non-art files (icons, logos, etc)
+                const forbiddenKeywords = ['logo', 'icon', 'stub', 'edit', 'wikimedia', 'folder', 'magnify', 'increase'];
+                const filtered = imageFiles.filter(img => {
+                    const lowTitle = img.title.toLowerCase();
+                    return (lowTitle.endsWith('.jpg') || lowTitle.endsWith('.jpeg') || lowTitle.endsWith('.png')) &&
+                           !forbiddenKeywords.some(key => lowTitle.includes(key));
+                }).slice(0, 24); // Request up to 24 pieces
+
+                if (filtered.length > 0) {
+                    for (let f of filtered) {
+                        fetchAndRenderImage(f.title);
+                    }
+                } else {
+                    gallery.innerHTML = "<p>Visual collection currently unavailable for this artist.</p>";
+                }
+
+                mainDisplay.style.display = 'block';
+                window.scrollTo({ top: 400, behavior: 'smooth' });
+
+            } catch (err) {
+                alert(err.message);
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        async function fetchAndRenderImage(fileTitle) {
+            try {
+                const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const p = data.query.pages;
+                const imgUrl = p[Object.keys(p)[0]].imageinfo[0].url;
+
+                // Only create the card if we get a valid URL
+                if (imgUrl) {
+                    const cleanName = fileTitle.replace('File:', '').replace(/\.[^/.]+$/, "").replace(/_/g, ' ');
+                    const item = document.createElement('div');
+                    item.className = 'art-item';
+                    item.innerHTML = `
+                        <img src="${imgUrl}" alt="${cleanName}" onerror="this.parentElement.style.display='none'">
+                        <div class="art-label">${cleanName}</div>
+                    `;
+                    gallery.appendChild(item);
+                }
+            } catch (e) {
+                // Silently skip images that fail to load
+            }
+        }
+    </script>
+</body>
+</html>
