@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArtHub | Online Art Portfolio Platform</title>
+
+  <style>
+    :root{
+      --bg:#0f1117;
+      --nav:#171a21;
+      --panel:#1f232d;
+      --panel2:#262b36;
+      --text:#f2f4f8;
+      --muted:#9ca3af;
+      --accent:#00b3ff;
+      --accent2:#008ed6;
+      --line:#303644;
+      --danger:#ff5a5a;
+      --success:#55d68b;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,Helvetica,sans-serif}
+    body{background:var(--bg);color:var(--text)}
+    a{text-decoration:none;color:inherit}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer;border:none}
+
+    header{
+      position:sticky;top:0;z-index:50;
+      background:rgba(23,26,33,.94);
+      border-bottom:1px solid var(--line);
+      backdrop-filter:blur(16px);
+    }
+
+    .topbar{
+      max-width:1500px;margin:auto;
+      height:68px;padding:0 28px;
+      display:flex;align-items:center;justify-content:space-between;gap:24px;
+    }
+
+    .logo{
+      display:flex;align-items:center;gap:10px;
+      font-weight:900;font-size:23px;letter-spacing:.5px;
+    }
+
+    .logo-mark{
+      width:35px;height:35px;border-radius:9px;
+      background:linear-gradient(135deg,var(--accent),#6be4ff);
+      display:grid;place-items:center;color:#00121d;font-weight:900;
+    }
+
+    nav{display:flex;gap:26px;color:var(--muted);font-size:14px}
+    nav a:hover{color:var(--text)}
+
+    .auth{display:flex;align-items:center;gap:10px}
+    .btn{
+      border-radius:8px;padding:11px 16px;font-weight:800;
+      color:var(--text);background:var(--panel2);
+      border:1px solid var(--line);
+    }
+    .btn:hover{filter:brightness(1.1)}
+    .btn-accent{background:var(--accent);color:#03131d;border-color:transparent}
+    .btn-danger{background:var(--danger);color:white;border-color:transparent}
+    .btn-small{padding:8px 11px;font-size:13px}
+
+    .hero{
+      background:
+        radial-gradient(circle at 78% 10%,rgba(0,179,255,.22),transparent 30%),
+        linear-gradient(135deg,#151923,#0f1117 60%);
+      border-bottom:1px solid var(--line);
+    }
+
+    .hero-inner{
+      max-width:1500px;margin:auto;
+      padding:82px 28px;
+      display:grid;grid-template-columns:1.1fr .9fr;gap:42px;align-items:center;
+    }
+
+    .eyebrow{color:var(--accent);font-size:13px;text-transform:uppercase;font-weight:900;letter-spacing:2px;margin-bottom:16px}
+    h1{font-size:clamp(42px,6vw,82px);line-height:.95;letter-spacing:-3px}
+    .hero p{color:var(--muted);font-size:18px;line-height:1.75;max-width:720px;margin:24px 0}
+
+    .hero-panel{
+      background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+      border:1px solid var(--line);border-radius:22px;min-height:390px;
+      padding:30px;display:flex;flex-direction:column;justify-content:space-between;
+      box-shadow:0 30px 80px rgba(0,0,0,.25)
+    }
+
+    .panel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .mini-card{
+      background:rgba(255,255,255,.05);border:1px solid var(--line);
+      border-radius:16px;padding:18px;min-height:120px;
+    }
+    .mini-card b{display:block;font-size:25px;margin-bottom:8px;color:var(--accent)}
+    .mini-card span{color:var(--muted);font-size:14px;line-height:1.5}
+
+    .wrap{max-width:1500px;margin:auto;padding:40px 28px}
+    .section-title{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}
+    .section-title h2{font-size:32px}
+    .section-title p{color:var(--muted);max-width:560px;line-height:1.6}
+
+    .tabs{
+      display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;
+    }
+    .tab{
+      background:var(--panel);border:1px solid var(--line);
+      color:var(--muted);padding:11px 14px;border-radius:9px;
+    }
+    .tab.active{background:var(--accent);color:#00131f;border-color:transparent;font-weight:900}
+
+    .search-row{
+      display:grid;grid-template-columns:1fr 210px;gap:12px;margin-bottom:22px
+    }
+
+    input,textarea,select{
+      width:100%;background:#11141b;color:var(--text);
+      border:1px solid var(--line);border-radius:9px;
+      padding:13px 14px;outline:none;
+    }
+    textarea{min-height:120px;resize:vertical}
+    input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(285px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      transition:.18s ease;
+    }
+    .card:hover{transform:translateY(-4px);border-color:#465164}
+
+    .thumb{
+      width:100%;height:250px;background:#0b0d12;
+      object-fit:cover;display:block;
+    }
+
+    .pdf-preview{
+      height:250px;background:#11141b;display:grid;place-items:center;
+      border-bottom:1px solid var(--line);text-align:center;padding:20px;
+    }
+    .pdf-preview b{display:block;font-size:26px;color:var(--accent);margin-bottom:8px}
+    .pdf-preview span{color:var(--muted)}
+
+    .card-body{padding:16px}
+    .card h3{font-size:19px;margin-bottom:7px}
+    .meta{color:var(--muted);font-size:13px;margin-bottom:10px;line-height:1.5}
+    .desc{color:#d6d9df;font-size:14px;line-height:1.55}
+
+    .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+    .count{color:var(--muted);font-size:13px;margin-top:10px}
+
+    .empty{
+      background:var(--panel);border:1px dashed #465164;border-radius:16px;
+      padding:48px 20px;text-align:center;color:var(--muted);
+    }
+    .empty h3{color:var(--text);font-size:24px;margin-bottom:8px}
+
+    .forms{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;
+    }
+
+    form{
+      background:var(--panel);border:1px solid var(--line);
+      border-radius:16px;padding:22px;
+    }
+    form h3{font-size:24px;margin-bottom:14px}
+    label{display:block;color:var(--muted);font-size:13px;margin:14px 0 7px}
+
+    .drop{
+      background:#11141b;border:1px dashed #4b5563;border-radius:13px;
+      padding:18px;color:var(--muted);
+    }
+    .preview-box{margin-top:12px}
+    .preview-box img{max-width:100%;border-radius:10px;border:1px solid var(--line);max-height:260px;object-fit:cover}
+
+    .modal{
+      position:fixed;inset:0;display:none;place-items:center;z-index:100;
+      background:rgba(0,0,0,.72);padding:20px;
+    }
+    .modal.active{display:grid}
+    .modal-box{
+      width:min(470px,100%);background:var(--panel);
+      border:1px solid var(--line);border-radius:18px;padding:24px;
+      box-shadow:0 30px 90px rgba(0,0,0,.5)
+    }
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .x{background:transparent;color:var(--muted);font-size:25px;padding:0}
+
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:120;
+      background:var(--panel);border:1px solid var(--line);
+      color:var(--text);padding:14px 16px;border-radius:12px;
+      display:none;max-width:360px;
+    }
+    .toast.show{display:block}
+
+    .comment-list{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+    .comment{font-size:13px;color:#d5d9e2;margin:7px 0}
+    .comment b{color:var(--accent)}
+
+    footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;padding:30px;margin-top:30px}
+
+    @media(max-width:900px){
+      nav{display:none}
+      .hero-inner,.forms{grid-template-columns:1fr}
+      .search-row{grid-template-columns:1fr}
+      .hero-panel{min-height:auto}
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="topbar">
+    <a class="logo" href="#">
+      <span class="logo-mark">A</span>
+      <span>ArtHub</span>
+    </a>
+    <nav>
+      <a href="#discover">Discover</a>
+      <a href="#artists">Artists</a>
+      <a href="#create">Create</a>
+      <a href="#my">My Studio</a>
+    </nav>
+    <div class="auth" id="authArea">
+      <button class="btn" onclick="openAuth('login')">Log In</button>
+      <button class="btn btn-accent" onclick="openAuth('signup')">Sign Up</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Art portfolio and exhibition platform</div>
+      <h1>Discover artists. Publish exhibitions.</h1>
+      <p>
+        A working HTML-only art platform with ID login, artist profiles, image/PDF uploads,
+        likes, comments, follows, search, and local saving in your browser.
+      </p>
+      <button class="btn btn-accent" onclick="document.getElementById('create').scrollIntoView({behavior:'smooth'})">Create Now</button>
+    </div>
+    <div class="hero-panel">
+      <div>
+        <h2 style="font-size:30px;margin-bottom:12px;">Platform Status</h2>
+        <p style="color:var(--muted);line-height:1.6">
+          No fake artists, no fake posts, no sample images, no fake likes.
+          Everything appears only after a real user creates it in this browser.
+        </p>
+      </div>
+      <div class="panel-grid">
+        <div class="mini-card"><b id="statArtists">0</b><span>Artist profiles</span></div>
+        <div class="mini-card"><b id="statPosts">0</b><span>Published works</span></div>
+        <div class="mini-card"><b id="statUsers">0</b><span>Created IDs</span></div>
+        <div class="mini-card"><b>HTML</b><span>Local working version</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section id="discover">
+    <div class="section-title">
+      <div>
+        <h2>Discover</h2>
+        <p>Browse uploaded artworks and exhibitions. This section becomes active after users publish posts.</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="setPostFilter('all', this)">All</button>
+      <button class="tab" onclick="setPostFilter('image', this)">Images</button>
+      <button class="tab" onclick="setPostFilter('pdf', this)">PDF Exhibitions</button>
+    </div>
+
+    <div id="postEmpty" class="empty">
+      <h3>No artworks yet</h3>
+      <p>Uploaded artworks and exhibitions will appear here.</p>
+    </div>
+    <div class="grid" id="postGrid"></div>
+  </section>
+
+  <section id="artists">
+    <div class="section-title">
+      <div>
+        <h2>Artists</h2>
+        <p>Search real profiles created through the website.</p>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <input id="artistSearch" placeholder="Search name, country, or style..." oninput="renderArtists()">
+      <select id="styleSearch" onchange="renderArtists()">
+        <option value="">All styles</option>
+        <option>Painting</option>
+        <option>Digital Art</option>
+        <option>Photography</option>
+        <option>Sculpture</option>
+        <option>Mixed Media</option>
+        <option>Illustration</option>
+        <option>3D Art</option>
+      </select>
+    </div>
+
+    <div id="artistEmpty" class="empty">
+      <h3>No artists yet</h3>
+      <p>Artist profiles will appear here after users create them.</p>
+    </div>
+    <div class="grid" id="artistGrid"></div>
+  </section>
+
+  <section id="create">
+    <div class="section-title">
+      <div>
+        <h2>Create</h2>
+        <p>Make an artist profile and publish artwork directly from your computer.</p>
+      </div>
+    </div>
+
+    <div class="forms">
+      <form onsubmit="createArtist(event)">
+        <h3>Create Artist Profile</h3>
+
+        <label>Artist name</label>
+        <input id="artistName" required placeholder="Artist name">
+
+        <label>Country</label>
+        <input id="artistCountry" required placeholder="Country">
+
+        <label>Style</label>
+        <select id="artistStyle" required>
+          <option value="">Choose style</option>
+          <option>Painting</option>
+          <option>Digital Art</option>
+          <option>Photography</option>
+          <option>Sculpture</option>
+          <option>Mixed Media</option>
+          <option>Illustration</option>
+          <option>3D Art</option>
+        </select>
+
+        <label>Bio</label>
+        <textarea id="artistBio" required placeholder="Tell visitors about the artist."></textarea>
+
+        <label>Profile image</label>
+        <div class="drop">
+          <input id="artistImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required onchange="previewFile(this,'artistPreview')">
+          <div class="preview-box" id="artistPreview"></div>
+        </div>
+
+        <br>
+        <button class="btn btn-accent" type="submit">Create Profile</button>
+      </form>
+
+      <form onsubmit="createPost(event)">
+        <h3>Publish Artwork / Exhibition</h3>
+
+        <label>Title</label>
+        <input id="postTitle" required placeholder="Artwork or exhibition title">
+
+        <label>Artist name</label>
+        <input id="postArtist" required placeholder="Artist name">
+
+        <label>Category</label>
+        <select id="postCategory" required>
+          <option value="">Choose category</option>
+          <option>Painting</option>
+          <option>Digital Art</option>
+          <option>Photography</option>
+          <option>Sculpture</option>
+          <option>Mixed Media</option>
+          <option>Illustration</option>
+          <option>3D Art</option>
+          <option>Online Exhibition</option>
+        </select>
+
+        <label>Description</label>
+        <textarea id="postDesc" required placeholder="Explain the work or exhibition."></textarea>
+
+        <label>Upload image or PDF</label>
+        <div class="drop">
+          <input id="postFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" required onchange="previewFile(this,'postPreview')">
+          <div class="preview-box" id="postPreview"></div>
+        </div>
+
+        <br>
+        <button class="btn btn-accent" type="submit">Publish</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="my">
+    <div class="section-title">
+      <div>
+        <h2>My Studio</h2>
+        <p>After login, you can see your own created profiles and posts.</p>
+      </div>
+    </div>
+
+    <div id="myStudio" class="empty">
+      <h3>Log in first</h3>
+      <p>Your uploaded profiles and artworks will appear here.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  © 2026 ArtHub. HTML-only working art platform.
+</footer>
+
+<div class="modal" id="authModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="authTitle">Log In</h2>
+      <button class="x" onclick="closeAuth()">×</button>
+    </div>
+
+    <label>ID</label>
+    <input id="authId" placeholder="Create or enter ID">
+
+    <label>Password</label>
+    <input id="authPass" type="password" placeholder="Password">
+
+    <br><br>
+    <button class="btn btn-accent" style="width:100%" onclick="submitAuth()">Continue</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let users = JSON.parse(localStorage.getItem("arthub_users") || "[]");
+  let artists = JSON.parse(localStorage.getItem("arthub_artists") || "[]");
+  let posts = JSON.parse(localStorage.getItem("arthub_posts") || "[]");
+  let currentUser = JSON.parse(localStorage.getItem("arthub_currentUser") || "null");
+  let postFilter = "all";
+
+  function saveAll(){
+    localStorage.setItem("arthub_users", JSON.stringify(users));
+    localStorage.setItem("arthub_artists", JSON.stringify(artists));
+    localStorage.setItem("arthub_posts", JSON.stringify(posts));
+    localStorage.setItem("arthub_currentUser", JSON.stringify(currentUser));
+  }
+
+  function toast(msg){
+    const t=document.getElementById("toast");
+    t.textContent=msg;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),2600);
+  }
+
+  function openAuth(type){
+    document.getElementById("authModal").classList.add("active");
+    document.getElementById("authModal").dataset.type=type;
+    document.getElementById("authTitle").textContent=type==="signup" ? "Sign Up" : "Log In";
+  }
+
+  function closeAuth(){
+    document.getElementById("authModal").classList.remove("active");
+  }
+
+  function submitAuth(){
+    const type=document.getElementById("authModal").dataset.type || "login";
+    const id=document.getElementById("authId").value.trim();
+    const pass=document.getElementById("authPass").value.trim();
+
+    if(!id || !pass){
+      toast("Please enter ID and password.");
+      return;
+    }
+
+    if(type==="signup"){
+      if(users.some(u=>u.id===id)){
+        toast("This ID already exists.");
+        return;
+      }
+      users.push({id, pass});
+      currentUser=id;
+      saveAll();
+      closeAuth();
+      updateUI();
+      toast("Account created.");
+      return;
+    }
+
+    const found=users.find(u=>u.id===id && u.pass===pass);
+    if(!found){
+      toast("Wrong ID or password.");
+      return;
+    }
+
+    currentUser=id;
+    saveAll();
+    closeAuth();
+    updateUI();
+    toast("Logged in.");
+  }
+
+  function logout(){
+    currentUser=null;
+    saveAll();
+    updateUI();
+    toast("Logged out.");
+  }
+
+  function requireLogin(){
+    if(!currentUser){
+      openAuth("login");
+      toast("Please log in first.");
+      return false;
+    }
+    return true;
+  }
+
+  function updateAuth(){
+    const area=document.getElementById("authArea");
+    if(currentUser){
+      area.innerHTML = `
+        <span style="color:var(--muted);font-size:14px">ID: <b style="color:var(--text)">${escapeHTML(currentUser)}</b></span>
+        <button class="btn" onclick="logout()">Log Out</button>
+      `;
+    }else{
+      area.innerHTML = `
+        <button class="btn" onclick="openAuth('login')">Log In</button>
+        <button class="btn btn-accent" onclick="openAuth('signup')">Sign Up</button>
+      `;
+    }
+  }
+
+  function fileToDataURL(file){
+    return new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(reader.result);
+      reader.onerror=()=>reject(new Error("File could not be read."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function previewFile(input, targetId){
+    const box=document.getElementById(targetId);
+    box.innerHTML="";
+    const file=input.files[0];
+    if(!file) return;
+
+    if(file.size > 4.5 * 1024 * 1024){
+      input.value="";
+      toast("Please upload a file under 4.5MB for HTML local storage.");
+      return;
+    }
+
+    if(file.type.startsWith("image/")){
+      const url=URL.createObjectURL(file);
+      box.innerHTML=`<img src="${url}" alt="Preview">`;
+    }else if(file.type==="application/pdf"){
+      box.innerHTML=`<p style="color:var(--muted);margin-top:10px">PDF selected: ${escapeHTML(file.name)}</p>`;
+    }
+  }
+
+  async function createArtist(e){
+    e.preventDefault();
+    if(!requireLogin()) return;
+
+    const file=document.getElementById("artistImage").files[0];
+    if(!file){toast("Please choose a profile image.");return;}
+
+    if(file.size > 4.5 * 1024 * 1024){
+      toast("Profile image must be under 4.5MB.");
+      return;
+    }
+
+    const image=await fileToDataURL(file);
+
+    artists.unshift({
+      id:crypto.randomUUID(),
+      owner:currentUser,
+      name:document.getElementById("artistName").value.trim(),
+      country:document.getElementById("artistCountry").value.trim(),
+      style:document.getElementById("artistStyle").value,
+      bio:document.getElementById("artistBio").value.trim(),
+      image,
+      followers:[]
+    });
+
+    saveAll();
+    e.target.reset();
+    document.getElementById("artistPreview").innerHTML="";
+    updateUI();
+    toast("Artist profile created.");
+  }
+
+  async function createPost(e){
+    e.preventDefault();
+    if(!requireLogin()) return;
+
+    const file=document.getElementById("postFile").files[0];
+    if(!file){toast("Please choose a file.");return;}
+
+    if(file.size > 4.5 * 1024 * 1024){
+      toast("File must be under 4.5MB for this HTML-only version.");
+      return;
+    }
+
+    const data=await fileToDataURL(file);
+
+    posts.unshift({
+      id:crypto.randomUUID(),
+      owner:currentUser,
+      title:document.getElementById("postTitle").value.trim(),
+      artist:document.getElementById("postArtist").value.trim(),
+      category:document.getElementById("postCategory").value,
+      desc:document.getElementById("postDesc").value.trim(),
+      file:data,
+      fileName:file.name,
+      fileType:file.type,
+      likes:[],
+      comments:[]
+    });
+
+    saveAll();
+    e.target.reset();
+    document.getElementById("postPreview").innerHTML="";
+    updateUI();
+    toast("Artwork published.");
+  }
+
+  function setPostFilter(filter, btn){
+    postFilter=filter;
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    btn.classList.add("active");
+    renderPosts();
+  }
+
+  function renderPosts(){
+    const grid=document.getElementById("postGrid");
+    const empty=document.getElementById("postEmpty");
+
+    let list=posts;
+    if(postFilter==="image") list=posts.filter(p=>p.fileType.startsWith("image/"));
+    if(postFilter==="pdf") list=posts.filter(p=>p.fileType==="application/pdf");
+
+    empty.style.display=list.length ? "none" : "block";
+
+    grid.innerHTML=list.map(post=>{
+      const realIndex=posts.findIndex(p=>p.id===post.id);
+      const liked=currentUser && post.likes.includes(currentUser);
+
+      const preview = post.fileType === "application/pdf"
+        ? `<div class="pdf-preview"><div><b>PDF</b><span>${escapeHTML(post.fileName)}</span></div></div>`
+        : `<img class="thumb" src="${post.file}" alt="${escapeHTML(post.title)}">`;
+
+      return `
+        <article class="card">
+          ${preview}
+          <div class="card-body">
+            <h3>${escapeHTML(post.title)}</h3>
+            <div class="meta">by ${escapeHTML(post.artist)} · ${escapeHTML(post.category)}</div>
+            <p class="desc">${escapeHTML(post.desc)}</p>
+
+            <div class="actions">
+              <button class="btn btn-small ${liked?'btn-accent':''}" onclick="likePost(${realIndex})">
+                ${liked ? "Liked" : "Like"} (${post.likes.length})
+              </button>
+              <button class="btn btn-small" onclick="addComment(${realIndex})">Comment</button>
+              ${post.fileType==="application/pdf" ? `<button class="btn btn-small" onclick="openPDF(${realIndex})">Open PDF</button>` : ""}
+              ${post.owner===currentUser ? `<button class="btn btn-small btn-danger" onclick="deletePost(${realIndex})">Delete</button>` : ""}
+            </div>
+
+            <div class="comment-list">
+              ${post.comments.length ? post.comments.map(c=>`
+                <div class="comment"><b>${escapeHTML(c.user)}</b>: ${escapeHTML(c.text)}</div>
+              `).join("") : `<div class="meta">No comments yet.</div>`}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function renderArtists(){
+    const grid=document.getElementById("artistGrid");
+    const empty=document.getElementById("artistEmpty");
+    const q=document.getElementById("artistSearch").value.toLowerCase();
+    const style=document.getElementById("styleSearch").value;
+
+    const list=artists.filter(a=>{
+      const keyword = a.name.toLowerCase().includes(q) ||
+                      a.country.toLowerCase().includes(q) ||
+                      a.style.toLowerCase().includes(q);
+      const styleOk = !style || a.style===style;
+      return keyword && styleOk;
+    });
+
+    empty.style.display=list.length ? "none" : "block";
+
+    grid.innerHTML=list.map(a=>{
+      const realIndex=artists.findIndex(x=>x.id===a.id);
+      const following=currentUser && a.followers.includes(currentUser);
+      return `
+        <article class="card">
+          <img class="thumb" src="${a.image}" alt="${escapeHTML(a.name)}">
+          <div class="card-body">
+            <h3>${escapeHTML(a.name)}</h3>
+            <div class="meta">${escapeHTML(a.country)} · ${escapeHTML(a.style)}</div>
+            <p class="desc">${escapeHTML(a.bio)}</p>
+            <div class="actions">
+              <button class="btn btn-small ${following?'btn-accent':''}" onclick="followArtist(${realIndex})">
+                ${following ? "Following" : "Follow"} (${a.followers.length})
+              </button>
+              ${a.owner===currentUser ? `<button class="btn btn-small btn-danger" onclick="deleteArtist(${realIndex})">Delete</button>` : ""}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function followArtist(index){
+    if(!requireLogin()) return;
+    const list=artists[index].followers;
+    if(list.includes(currentUser)){
+      artists[index].followers=list.filter(x=>x!==currentUser);
+    }else{
+      artists[index].followers.push(currentUser);
+    }
+    saveAll();
+    updateUI();
+  }
+
+  function likePost(index){
+    if(!requireLogin()) return;
+    const list=posts[index].likes;
+    if(list.includes(currentUser)){
+      posts[index].likes=list.filter(x=>x!==currentUser);
+    }else{
+      posts[index].likes.push(currentUser);
+    }
+    saveAll();
+    updateUI();
+  }
+
+  function addComment(index){
+    if(!requireLogin()) return;
+    const text=prompt("Write your comment:");
+    if(!text || !text.trim()) return;
+    posts[index].comments.push({user:currentUser,text:text.trim()});
+    saveAll();
+    updateUI();
+  }
+
+  function deletePost(index){
+    if(!currentUser || posts[index].owner!==currentUser) return;
+    if(confirm("Delete this post?")){
+      posts.splice(index,1);
+      saveAll();
+      updateUI();
+    }
+  }
+
+  function deleteArtist(index){
+    if(!currentUser || artists[index].owner!==currentUser) return;
+    if(confirm("Delete this artist profile?")){
+      artists.splice(index,1);
+      saveAll();
+      updateUI();
+    }
+  }
+
+  function openPDF(index){
+    const win=window.open();
+    if(win){
+      win.document.write(`<iframe src="${posts[index].file}" style="border:0;width:100%;height:100vh"></iframe>`);
+    }
+  }
+
+  function renderMyStudio(){
+    const box=document.getElementById("myStudio");
+    if(!currentUser){
+      box.className="empty";
+      box.innerHTML=`<h3>Log in first</h3><p>Your uploaded profiles and artworks will appear here.</p>`;
+      return;
+    }
+
+    const myArtists=artists.filter(a=>a.owner===currentUser);
+    const myPosts=posts.filter(p=>p.owner===currentUser);
+
+    box.className="";
+    box.innerHTML=`
+      <div class="grid">
+        <div class="card"><div class="card-body"><h3>${myArtists.length}</h3><p class="meta">Your artist profiles</p></div></div>
+        <div class="card"><div class="card-body"><h3>${myPosts.length}</h3><p class="meta">Your published artworks</p></div></div>
+      </div>
+    `;
+  }
+
+  function updateStats(){
+    document.getElementById("statArtists").textContent=artists.length;
+    document.getElementById("statPosts").textContent=posts.length;
+    document.getElementById("statUsers").textContent=users.length;
+  }
+
+  function updateUI(){
+    updateAuth();
+    renderPosts();
+    renderArtists();
+    renderMyStudio();
+    updateStats();
+  }
+
+  function escapeHTML(str){
+    return String(str).replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  updateUI();
+</script>
+</body>
+</html>
