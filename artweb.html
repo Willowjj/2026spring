@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArtSpace | Online Exhibition Platform</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f6f4ef;
+      color: #222;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 20px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 15px;
+    }
+
+    .hero {
+      padding: 90px 8%;
+      background: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+      url("https://images.unsplash.com/photo-1541961017774-22349e4a1262") center/cover;
+      color: white;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      background: #c9a227;
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    section {
+      padding: 60px 8%;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-size: 32px;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    }
+
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card-content h3 {
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #eee;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.08);
+      max-width: 700px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0 18px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    textarea {
+      resize: vertical;
+      height: 120px;
+    }
+
+    footer {
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 25px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">ArtSpace</div>
+    <nav>
+      <a href="#artists">Artists</a>
+      <a href="#create">Create Artist Account</a>
+      <a href="#exhibition">Exhibition</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Create Your Online Exhibition</h1>
+    <p>A professional platform where artists can share their profile, artworks, and exhibitions.</p>
+    <a href="#create"><button class="btn">Start Now</button></a>
+  </div>
+
+  <section id="artists">
+    <h2>Find Artists</h2>
+    <input 
+      type="text" 
+      id="searchInput" 
+      class="search-box" 
+      placeholder="Search artist by name, style, or country..."
+      onkeyup="searchArtists()"
+    />
+
+    <div class="grid" id="artistList"></div>
+  </section>
+
+  <section id="create">
+    <h2>Create Artist Account</h2>
+
+    <form onsubmit="addArtist(event)">
+      <label>Artist Name</label>
+      <input type="text" id="artistName" required />
+
+      <label>Country</label>
+      <input type="text" id="artistCountry" required />
+
+      <label>Art Style</label>
+      <select id="artistStyle" required>
+        <option value="">Select style</option>
+        <option>Painting</option>
+        <option>Photography</option>
+        <option>Digital Art</option>
+        <option>Sculpture</option>
+        <option>Mixed Media</option>
+      </select>
+
+      <label>Artist Bio</label>
+      <textarea id="artistBio" required></textarea>
+
+      <label>Profile Image URL</label>
+      <input type="url" id="artistImage" placeholder="Paste image URL" required />
+
+      <button class="btn" type="submit">Create Account</button>
+    </form>
+  </section>
+
+  <section id="exhibition">
+    <h2>Create Online Exhibition</h2>
+
+    <form onsubmit="addExhibition(event)">
+      <label>Exhibition Title</label>
+      <input type="text" id="exhibitionTitle" required />
+
+      <label>Artist Name</label>
+      <input type="text" id="exhibitionArtist" required />
+
+      <label>Artwork Image URL</label>
+      <input type="url" id="artworkImage" required />
+
+      <label>Description</label>
+      <textarea id="exhibitionDescription" required></textarea>
+
+      <button class="btn" type="submit">Publish Exhibition</button>
+    </form>
+
+    <br><br>
+    <div class="grid" id="exhibitionList"></div>
+  </section>
+
+  <footer>
+    <p>© 2026 ArtSpace. Online Exhibition Platform.</p>
+  </footer>
+
+  <script>
+    let artists = JSON.parse(localStorage.getItem("artists")) || [
+      {
+        name: "Mina Kim",
+        country: "South Korea",
+        style: "Digital Art",
+        bio: "Mina creates modern digital artworks inspired by city life.",
+        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+      },
+      {
+        name: "Daniel Lee",
+        country: "Canada",
+        style: "Painting",
+        bio: "Daniel focuses on abstract painting and emotional color.",
+        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+      }
+    ];
+
+    let exhibitions = JSON.parse(localStorage.getItem("exhibitions")) || [];
+
+    function displayArtists(list = artists) {
+      const artistList = document.getElementById("artistList");
+      artistList.innerHTML = "";
+
+      list.forEach(artist => {
+        artistList.innerHTML += `
+          <div class="card">
+            <img src="${artist.image}" alt="${artist.name}">
+            <div class="card-content">
+              <h3>${artist.name}</h3>
+              <p><strong>Country:</strong> ${artist.country}</p>
+              <p>${artist.bio}</p>
+              <span class="tag">${artist.style}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function searchArtists() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+
+      const filtered = artists.filter(artist =>
+        artist.name.toLowerCase().includes(keyword) ||
+        artist.country.toLowerCase().includes(keyword) ||
+        artist.style.toLowerCase().includes(keyword)
+      );
+
+      displayArtists(filtered);
+    }
+
+    function addArtist(event) {
+      event.preventDefault();
+
+      const newArtist = {
+        name: document.getElementById("artistName").value,
+        country: document.getElementById("artistCountry").value,
+        style: document.getElementById("artistStyle").value,
+        bio: document.getElementById("artistBio").value,
+        image: document.getElementById("artistImage").value
+      };
+
+      artists.push(newArtist);
+      localStorage.setItem("artists", JSON.stringify(artists));
+
+      displayArtists();
+      event.target.reset();
+      alert("Artist account created successfully!");
+    }
+
+    function addExhibition(event) {
+      event.preventDefault();
+
+      const newExhibition = {
+        title: document.getElementById("exhibitionTitle").value,
+        artist: document.getElementById("exhibitionArtist").value,
+        image: document.getElementById("artworkImage").value,
+        description: document.getElementById("exhibitionDescription").value
+      };
+
+      exhibitions.push(newExhibition);
+      localStorage.setItem("exhibitions", JSON.stringify(exhibitions));
+
+      displayExhibitions();
+      event.target.reset();
+      alert("Exhibition published successfully!");
+    }
+
+    function displayExhibitions() {
+      const exhibitionList = document.getElementById("exhibitionList");
+      exhibitionList.innerHTML = "";
+
+      exhibitions.forEach(exhibition => {
+        exhibitionList.innerHTML += `
+          <div class="card">
+            <img src="${exhibition.image}" alt="${exhibition.title}">
+            <div class="card-content">
+              <h3>${exhibition.title}</h3>
+              <p><strong>Artist:</strong> ${exhibition.artist}</p>
+              <p>${exhibition.description}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    displayArtists();
+    displayExhibitions();
+  </script>
+
+</body>
+</html>
