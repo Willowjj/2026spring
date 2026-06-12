@@ -1,0 +1,21 @@
+5.29
+
+Input - function - output 
+Input 이 있어야 output 있음 (human as function)
+STT - speech to text
+TTS - text to speech
+LM - language model
+Input > AI function > output (image reconization) 
+
+Image, speech text >> Data 
+
+Data should be vectorized.
+A vector - data visualization
+
+Data 에 따라 고양이, 강아지, 등 알 수 있게 해준다.
+
+Image data to a vector
+(Vector is a line 한 줄, vector로 바꾸려면 한 줄로 해야함)
+
+Inner product
+Chat GPT 개수 1750억
